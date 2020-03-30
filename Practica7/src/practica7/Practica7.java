@@ -40,22 +40,13 @@ public class Practica7 {
                     int i;
                     try(FileInputStream fin = new FileInputStream(entrada);
                         FileOutputStream fout = new FileOutputStream(salida)){
-                        String cabecera = "-------------------------------------- \n Cartelera de CineFBMoll \n--------------------------------------";
-                        fout.write(cabecera.getBytes());
-                        String titulo = "\n-----";
-                        fout.write(titulo.getBytes());
-                        int posicion = 1;
-                        //boolean esTitulo = true;
-                        do{
-                            i = fin.read();
-                            if (i != -1) {
-                                fout.write(i);
-                                if(posicion==1){
-                                    
-                                }                                
-                            }
-                        }
-                        while(i != -1);
+                        
+                        
+                        escribirCabecera(fout);
+                        escribirTitulo(fin, fout);
+                   
+                        
+                        
                     }
                     catch(FileNotFoundException exc){
                         System.out.println("Error, el archivo de origen no existe");
@@ -68,5 +59,26 @@ public class Practica7 {
             }
         }
     }
+
+    public static void escribirCabecera(final FileOutputStream fout) throws IOException {
+        String cabecera = "-------------------------------------- \n Cartelera de CineFBMoll \n--------------------------------------";
+        fout.write(cabecera.getBytes());
+    }
     
+    public static void escribirTitulo(final FileInputStream fin, final FileOutputStream fout) throws IOException {
+        int i;
+        String titulo = "\n-----";
+        fout.write(titulo.getBytes());
+        boolean seguirEscribiendo = true;
+        do{
+            i = fin.read();
+            if(i == '#'){
+                seguirEscribiendo = false;
+            }
+            fout.write(i);
+        }
+        while(seguirEscribiendo);
+        String titulo2 = "-----";
+        fout.write(titulo2.getBytes());
+    }
 }
