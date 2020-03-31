@@ -75,7 +75,9 @@ public class Practica7 {
             if(i == '#'){
                 seguirEscribiendo = false;
             }
-            fout.write(i);
+            else{
+                fout.write(i);
+            }
         }
         while(seguirEscribiendo);
         String titulo2 = "-----";
