@@ -58,6 +58,7 @@ public class Practica7 {
                         for(int j = 0;j<contadorPeliculas;j++){
                             escribirCabecera(fout);
                             escribirTitulo(fin, fout);
+                            escribirAño(fin, fout);
                         }
                         
                    
@@ -94,6 +95,27 @@ public class Practica7 {
             else{
                 fout.write(i);
             }
+        }
+        while(seguirEscribiendo);
+        String titulo2 = "-----";
+        fout.write(titulo2.getBytes());
+    }
+    
+    public static void escribirAño(final FileInputStream fin, final FileOutputStream fout) throws IOException {
+        int i;
+        String titulo = "\nAño: ";
+        fout.write(titulo.getBytes());
+        boolean seguirEscribiendo = true;
+        do{
+            i = fin.read();
+            if(i == '#'){
+                while(i != '#'){
+                    fout.write(i);
+                }  
+            }
+            /*else{
+                fout.write(i);
+            }*/
         }
         while(seguirEscribiendo);
         String titulo2 = "-----";
