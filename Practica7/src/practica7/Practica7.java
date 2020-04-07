@@ -37,13 +37,29 @@ public class Practica7 {
                     String entrada = lector.next();
                     System.out.println("Dime la ruta de salida");
                     String salida = lector.next();
-                    int i;
+                    //int i;
                     try(FileInputStream fin = new FileInputStream(entrada);
                         FileOutputStream fout = new FileOutputStream(salida)){
                         
+                        int i;
+                        int contadorPeliculas = 1;
+                        do{
+                            i = fin.read();
+                            if(i != -1){
+                                if(i == '{'){
+                                    contadorPeliculas++;
+                                }
+                            }
+                        }
+                        while(i != -1);
                         
-                        escribirCabecera(fout);
-                        escribirTitulo(fin, fout);
+                        //System.out.println(contadorPeliculas);
+                                
+                        for(int j = 0;j<contadorPeliculas;j++){
+                            escribirCabecera(fout);
+                            escribirTitulo(fin, fout);
+                        }
+                        
                    
                         
                         
