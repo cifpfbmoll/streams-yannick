@@ -37,30 +37,14 @@ public class Practica7 {
                     String entrada = lector.next();
                     System.out.println("Dime la ruta de salida");
                     String salida = lector.next();
-                    //int i;
+                    int i;
                     try(FileInputStream fin = new FileInputStream(entrada);
                         FileOutputStream fout = new FileOutputStream(salida)){
                         
-                        int i;
-                        int contadorPeliculas = 1;
-                        do{
-                            i = fin.read();
-                            if(i != -1){
-                                if(i == '{'){
-                                    contadorPeliculas++;
-                                }
-                            }
-                        }
-                        while(i != -1);
                         
-                        //System.out.println(contadorPeliculas);
-                                
-                        for(int j = 0;j<contadorPeliculas;j++){
-                            escribirCabecera(fout);
-                            escribirTitulo(fin, fout);
-                            escribirAño(fin, fout);
-                        }
-                        
+                        escribirCabecera(fout);
+                        escribirTitulo(fin, fout);
+                        escribirAño(fin, fout);
                    
                         
                         
@@ -103,22 +87,22 @@ public class Practica7 {
     
     public static void escribirAño(final FileInputStream fin, final FileOutputStream fout) throws IOException {
         int i;
-        String titulo = "\nAño: ";
+        String titulo = "\nAnio: ";
         fout.write(titulo.getBytes());
         boolean seguirEscribiendo = true;
         do{
             i = fin.read();
             if(i == '#'){
-                while(i != '#'){
+                do{
                     fout.write(i);
-                }  
+                }
+                while(i != '#');
+                seguirEscribiendo = false;
             }
-            /*else{
-                fout.write(i);
-            }*/
+            
+            
         }
         while(seguirEscribiendo);
-        String titulo2 = "-----";
-        fout.write(titulo2.getBytes());
+        
     }
 }
