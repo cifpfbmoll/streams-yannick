@@ -26,7 +26,7 @@ public class Practica7ej3 {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        String[] campos = {"Alumno: ", "Módulo ", "Nota ", "Lenguaje de marcas ", "Entornos de desarrollo ", "Base de datos ", "Sistemas informáticos ", "FOL ", "Nº de módulos aprobados: ", "Nº de módulos suspendidos: ", "Nº de módulos convalidados: ", "Fecha: "};
+        String[] campos = {"Alumno: ", "Módulo ", "Nota ", "Lenguaje de marcas                    ", "Entornos de desarrollo ", "Base de datos ", "Sistemas informáticos ", "FOL ", "Nº de módulos aprobados: ", "Nº de módulos suspendidos: ", "Nº de módulos convalidados: ", "Fecha: "};
         Scanner lector = new Scanner(System.in);
         System.out.println("Dime la ruta de entrada");
         String entrada = lector.next();
@@ -36,10 +36,26 @@ public class Practica7ej3 {
         try(BufferedReader lectorMejorado = new BufferedReader(new FileReader(entrada)); /*BufferedWriter escritorMejorado = new BufferedWriter(new FileWriter(salida))*/){
             boolean eof = false;
             String lineaLeida = lectorMejorado.readLine();
-            
             //System.out.println(lineaLeida);
             while (lineaLeida != null) {
-                BufferedWriter escritorMejorado = new BufferedWriter(new FileWriter(salida+"alumno"+i+".txt"));
+                String nombreAlumno =  "";
+                boolean seguirObteniendoNombre =  true;
+                int j = 0;
+                int contadorEspaciosNombre = 0;
+                while(seguirObteniendoNombre){
+                    char c = lineaLeida.charAt(j);
+                    if (c!=' '){
+                        nombreAlumno+=c;
+                    }
+                    if (c==' '){
+                        contadorEspaciosNombre++; 
+                    }
+                    j++;
+                    if( contadorEspaciosNombre==3){
+                        seguirObteniendoNombre = false;
+                    }
+                }
+                BufferedWriter escritorMejorado = new BufferedWriter(new FileWriter(salida+nombreAlumno+".txt"));
                 escritorMejorado.append("\n---------------------------------------------\n" +
 "Boletín de notas CIFP FBMOLL\n" +
 "---------------------------------------------\n");
@@ -59,6 +75,55 @@ public class Practica7ej3 {
                     if(contadorEspacios==3){
                         seguirImprimiendo = false;
                     }
+                }
+                escritorMejorado.append("\n------------------------------   -------\n"+campos[1]+"                            "+campos[2]+"\n------------------------------   -------\n");
+                escritorMejorado.append(campos[3]);
+                
+                /*boolean seguirBuscandoNota = true;
+                int y = 0;
+                while(seguirBuscandoNota){
+
+                    char c = lineaLeida.charAt(y);
+                    
+                    if (Character.isDigit(c)){
+                        escritorMejorado.append(c);
+                        seguirBuscandoNota=false;
+                    }
+                    y++;
+                }*/
+                
+                int modulosAprobados = 0;
+                int modulosSuspendidos = 0;
+                int modulosConvalidados = 0;
+                
+                boolean seguirBuscandoNota = true;
+                int y = 0;
+                int contadorEspaciosNota = 0;
+                while(seguirBuscandoNota){
+                    char c = lineaLeida.charAt(y);
+                    if(contadorEspaciosNota==3){
+                        seguirBuscandoNota = false;
+                        if(Character.isDigit(c)){
+                            escritorMejorado.append(c);
+                            if(c<5){
+                                modulosSuspendidos++;
+                            }
+                            else{
+                                modulosAprobados++;
+                            }
+                        }
+                        else{
+                            char d = lineaLeida.charAt(y+2);
+                            escritorMejorado.append("c-"+d);
+                            modulosConvalidados++;
+                            modulosAprobados++;
+                        }
+                    }
+                    if(c==' '){
+                       contadorEspaciosNota++; 
+                    }
+                    
+                    y++;
                 }
                 
                 /*for (int n = 0; n<lineaLeida.length(); n++) { 
