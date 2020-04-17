@@ -14,6 +14,10 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  *
@@ -27,7 +31,7 @@ public class Practica7ej3 {
     public static void main(String[] args) {
         // TODO code application logic here
         String[] campos = {"Alumno: ", "Módulo ", "Nota ", "Nº de módulos aprobados: ", "Nº de módulos suspendidos: ", "Nº de módulos convalidados: ", "Fecha: "};
-        String[] notas = {"Lenguaje de marcas                    ", "Entornos de desarrollo ", "Base de datos ", "Sistemas informáticos ", "FOL "};
+        String[] notas = {"Lenguaje de marcas                   ", "Programación                         ", "Entornos de desarrollo               ", "Base de datos                        ", "Sistemas informáticos                ", "FOL                                  "};
         Scanner lector = new Scanner(System.in);
         System.out.println("Dime la ruta de entrada");
         String entrada = lector.next();
@@ -79,86 +83,85 @@ public class Practica7ej3 {
                 }
                 escritorMejorado.append("\n------------------------------   -------\n"+campos[1]+"                            "+campos[2]+"\n------------------------------   -------\n");
                 
-                
-                /*boolean seguirBuscandoNota = true;
-                int y = 0;
-                while(seguirBuscandoNota){
-
-                    char c = lineaLeida.charAt(y);
-                    
-                    if (Character.isDigit(c)){
-                        escritorMejorado.append(c);
-                        seguirBuscandoNota=false;
-                    }
-                    y++;
-                }*/
                 int modulosAprobados = 0;
                 int modulosSuspendidos = 0;
                 int modulosConvalidados = 0;
+                int contadorEspaciosNota = 0;
+                int posicionNota = 3;
+                int y = 0;
                 
                 for(int q = 0; q<notas.length; q++){
+                    escritorMejorado.append(notas[q]);
+                    boolean seguirBuscandoNota = true;
                     
-                }
-                
-                escritorMejorado.append(notas[0]);
-                
-                boolean seguirBuscandoNota = true;
-                int y = 0;
-                int contadorEspaciosNota = 0;
-                while(seguirBuscandoNota){
-                    char c = lineaLeida.charAt(y);
-                    if(contadorEspaciosNota==3){
-                        seguirBuscandoNota = false;
-                        if(Character.isDigit(c)){
-                            escritorMejorado.append(c);
-                            if(c<5){
-                                modulosSuspendidos++;
+                    while(seguirBuscandoNota){
+                        char c = lineaLeida.charAt(y);
+                        if(contadorEspaciosNota==posicionNota){
+                            seguirBuscandoNota = false;
+                            posicionNota++;
+                            if(Character.isDigit(c)){
+                                escritorMejorado.append(c);
+                                int s = y+1;
+                                char caracterSiguiente = lineaLeida.charAt(s);
+                                escritorMejorado.append(caracterSiguiente+"\n");
+                                
+                                if(Character.isDigit(caracterSiguiente)){
+                                    String numeroCompleto = new StringBuilder().append(c).append(caracterSiguiente).toString();
+                                    //String numeroFinal = c+""+caracterSiguiente;
+                                    int numeroFinalint = Integer.parseInt(numeroCompleto);
+                                    //escritorMejorado.append(numeroFinal);
+
+                                    if(numeroFinalint>=5){
+                                        modulosAprobados++;
+                                    }
+                                    else{
+                                        modulosSuspendidos++;
+                                    }
+                                }
+                                else{
+                                    int d=Character.getNumericValue(c);
+                                    if(d>=5){
+                                        modulosAprobados++;
+                                    }
+                                    else{
+                                        modulosSuspendidos++;
+                                    }
+                                }
+                                
                             }
                             else{
+                                escritorMejorado.append("c-5 \n");
+                                modulosConvalidados++;
                                 modulosAprobados++;
                             }
                         }
-                        else{
-                            char d = lineaLeida.charAt(y+2);
-                            escritorMejorado.append("c-"+d);
-                            modulosConvalidados++;
-                            modulosAprobados++;
+                        if(c==' '){
+                           contadorEspaciosNota++; 
                         }
-                    }
-                    if(c==' '){
-                       contadorEspaciosNota++; 
+                        
+                        y++;
                     }
                     
-                    y++;
                 }
                 
-               
+                escritorMejorado.append("------------------------------------------\n");
+                escritorMejorado.append("Nº de módulos aprobados:                "+modulosAprobados+"\nNº de módulos suspendidos:              "+modulosSuspendidos+"\nNº de módulos convalidados:             "+modulosConvalidados+"\n");
+                escritorMejorado.append("------------------------------------------\n");
                 
-                /*for (int n = 0; n<lineaLeida.length(); n++) { 
-                    char c = lineaLeida.charAt (n); 
-                    //if()
-                    System.out.print (c); 
-                }*/
+                /*Calendar c1 = Calendar.getInstance();
+                Calendar c2 = new GregorianCalendar();
                 
-                //boolean nombreCompleto = false;
-                //int letra = lectorMejorado.read();
+                dia = Integer.toString(c.get(Calendar.DATE));
+                mes = Integer.toString(c.get(Calendar.MONTH));
+                annio = Integer.toString(c.get(Calendar.YEAR));*/
                 
-                /*int value;
-                    while ((value = lineaLeida.read()) != -1) {
-                        //content.append((char) value);
-                        System.out.print((char) value);
-                }*/
+                Date objDate = new Date(); // Sistema actual La fecha y la hora se asignan a objDate 
+ 
+                //System.out.println(objDate); 
+                String strDateFormat = "dd/MM/yyyy"; // El formato de fecha está especificado  
+                SimpleDateFormat objSDF = new SimpleDateFormat(strDateFormat); // La cadena de formato de fecha se pasa como un argumento al objeto 
+                escritorMejorado.append("\nFecha: "+objSDF.format(objDate)+"\nLugar: Palma de Mallorca\n"); // El formato de fecha se aplica a la fecha actual
                 
-                /*while(lectorMejorado.read()!=-1){
-                    
-                    System.out.print((char) lectorMejorado.read());
-                    //content.append((char) value);
-                }*/
-                /*for (int j = 0; j < campos.length; j++) {
-                    System.out.println(campos[j]);
-                }*/
-                //System.out.println(lineaLeida);
-                // read next line
                 escritorMejorado.close();
                 i++;
                 lineaLeida = lectorMejorado.readLine();
