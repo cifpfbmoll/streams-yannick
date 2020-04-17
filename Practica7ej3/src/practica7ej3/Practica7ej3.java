@@ -26,7 +26,8 @@ public class Practica7ej3 {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        String[] campos = {"Alumno: ", "Módulo ", "Nota ", "Lenguaje de marcas                    ", "Entornos de desarrollo ", "Base de datos ", "Sistemas informáticos ", "FOL ", "Nº de módulos aprobados: ", "Nº de módulos suspendidos: ", "Nº de módulos convalidados: ", "Fecha: "};
+        String[] campos = {"Alumno: ", "Módulo ", "Nota ", "Nº de módulos aprobados: ", "Nº de módulos suspendidos: ", "Nº de módulos convalidados: ", "Fecha: "};
+        String[] notas = {"Lenguaje de marcas                    ", "Entornos de desarrollo ", "Base de datos ", "Sistemas informáticos ", "FOL "};
         Scanner lector = new Scanner(System.in);
         System.out.println("Dime la ruta de entrada");
         String entrada = lector.next();
@@ -77,7 +78,7 @@ public class Practica7ej3 {
                     }
                 }
                 escritorMejorado.append("\n------------------------------   -------\n"+campos[1]+"                            "+campos[2]+"\n------------------------------   -------\n");
-                escritorMejorado.append(campos[3]);
+                
                 
                 /*boolean seguirBuscandoNota = true;
                 int y = 0;
@@ -91,10 +92,15 @@ public class Practica7ej3 {
                     }
                     y++;
                 }*/
-                
                 int modulosAprobados = 0;
                 int modulosSuspendidos = 0;
                 int modulosConvalidados = 0;
+                
+                for(int q = 0; q<notas.length; q++){
+                    
+                }
+                
+                escritorMejorado.append(notas[0]);
                 
                 boolean seguirBuscandoNota = true;
                 int y = 0;
@@ -125,6 +131,8 @@ public class Practica7ej3 {
                     
                     y++;
                 }
+                
+               
                 
                 /*for (int n = 0; n<lineaLeida.length(); n++) { 
                     char c = lineaLeida.charAt (n); 
