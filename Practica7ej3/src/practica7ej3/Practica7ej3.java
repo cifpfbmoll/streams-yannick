@@ -8,12 +8,14 @@ package practica7ej3;
 import java.util.Scanner;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -37,6 +39,19 @@ public class Practica7ej3 {
         String entrada = lector.next();
         System.out.println("Dime la ruta de salida");
         String salida = lector.next();
+        pasarNotasTxt(entrada, salida, campos, notas);
+        try{
+            escribirObjeto(entrada, notas);
+        }
+        catch(IOException exc){
+            System.out.println("Error al leer el archivo");
+            System.out.println(exc.getMessage());
+        }
+        
+        
+    }
+
+    public static void pasarNotasTxt(String entrada, String salida, String[] campos, String[] notas) throws NumberFormatException {
         int i = 1;
         try(BufferedReader lectorMejorado = new BufferedReader(new FileReader(entrada)); /*BufferedWriter escritorMejorado = new BufferedWriter(new FileWriter(salida))*/){
             boolean eof = false;
@@ -62,8 +77,8 @@ public class Practica7ej3 {
                 }
                 BufferedWriter escritorMejorado = new BufferedWriter(new FileWriter(salida+nombreAlumno+".txt"));
                 escritorMejorado.append("\n---------------------------------------------\n" +
-"Boletín de notas CIFP FBMOLL\n" +
-"---------------------------------------------\n");
+                        "Boletín de notas CIFP FBMOLL\n" +
+                        "---------------------------------------------\n");
                 
                 escritorMejorado.append(campos[0]);
                 //System.out.println("");
@@ -73,7 +88,7 @@ public class Practica7ej3 {
                 while(seguirImprimiendo){
                     char c = lineaLeida.charAt(n);
                     if (c==' '){
-                       contadorEspacios++; 
+                        contadorEspacios++; 
                     }
                     escritorMejorado.append(c);
                     n++;
@@ -136,7 +151,7 @@ public class Practica7ej3 {
                             }
                         }
                         if(c==' '){
-                           contadorEspaciosNota++; 
+                            contadorEspaciosNota++; 
                         }
                         
                         y++;
@@ -155,10 +170,10 @@ public class Practica7ej3 {
                 mes = Integer.toString(c.get(Calendar.MONTH));
                 annio = Integer.toString(c.get(Calendar.YEAR));*/
                 
-                Date objDate = new Date(); // Sistema actual La fecha y la hora se asignan a objDate 
- 
-                //System.out.println(objDate); 
-                String strDateFormat = "dd/MM/yyyy"; // El formato de fecha está especificado  
+                Date objDate = new Date(); // Sistema actual La fecha y la hora se asignan a objDate
+                
+                //System.out.println(objDate);
+                String strDateFormat = "dd/MM/yyyy"; // El formato de fecha está especificado
                 SimpleDateFormat objSDF = new SimpleDateFormat(strDateFormat); // La cadena de formato de fecha se pasa como un argumento al objeto 
                 escritorMejorado.append("\nFecha: "+objSDF.format(objDate)+"\nLugar: Palma de Mallorca\n"); // El formato de fecha se aplica a la fecha actual
                 
@@ -175,5 +190,48 @@ public class Practica7ej3 {
             System.out.println(exc.getMessage());
         }
     }
+    
+    public static void escribirObjeto(String entrada, String[] notas) throws IOException{
+        BufferedReader lectorMejorado = new BufferedReader(new FileReader(entrada));
+        String lineaLeida = lectorMejorado.readLine();
+        File f = new File("datos.obj");
+        FileOutputStream fos=new FileOutputStream(f);
+        ObjectOutputStream oos=new ObjectOutputStream(fos);
+        while (lineaLeida != null) {
+            //System.out.println(lineaLeida);
+            boolean seguirImprimiendo =  true;
+            int n = 0;
+            int contadorEspacios = 0;
+            String nombre = "";
+            while(seguirImprimiendo){
+                char c = lineaLeida.charAt(n);
+                if (c==' '){
+                    contadorEspacios++; 
+                }
+                nombre+=c;
+                n++;
+                if(contadorEspacios==3){
+                    seguirImprimiendo = false;
+                }
+            }
+            
+            int posicionNota = 3;
+            int y = 0;
+            
+
+            for(int q = 0; q<notas.length; q++){
+                
+                boolean seguirBuscandoNota = true;
+
+            }
+            
+            oos.writeObject(new Notas(nombre,10,10,10,10,10,10,"feccha","lugar"));
+            
+            lineaLeida = lectorMejorado.readLine();
+        }
+        lectorMejorado.close();
+        oos.close();        
+    }
+    
     
 }
