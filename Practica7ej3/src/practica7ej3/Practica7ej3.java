@@ -48,6 +48,13 @@ public class Practica7ej3 {
             System.out.println("Error al leer el archivo");
             System.out.println(exc.getMessage());
         }
+        try{
+            leerObjeto(notas);
+        }catch(ClassNotFoundException e){
+            
+        }catch(IOException e){
+            
+        }
         //leerObjeto();
 
     }
@@ -284,14 +291,32 @@ public class Practica7ej3 {
 
     }
 
-    public static void leerObjeto() throws ClassNotFoundException, IOException{
+    public static void leerObjeto(String[] notas) throws ClassNotFoundException, IOException{
         ObjectInputStream ois=null;
         try{
             File f=new File("datos.obj");
             FileInputStream fis = new FileInputStream(f);
             ois=new ObjectInputStream(fis);
             while(true){
-                Notas n
+                Notas n=(Notas) ois.readObject();
+                System.out.println("---------------------------------------------\n" +
+"Boletín de notas CIFP FBMOLL\n" +
+"---------------------------------------------");
+                System.out.println("Alumno: "+n.getNombre());
+                System.out.println("------------------------------   -------\n" +
+"Módulo                             Nota \n" +
+"------------------------------   -------");
+                String[] arrayNotas=n.getNotas();
+                for(int i=0; i<arrayNotas.length; i++){
+                    System.out.println(notas[i]+arrayNotas[i]);
+                }
+                System.out.println("------------------------------------------");
+                System.out.println("Nº de módulos aprobados:                "+n.getModulosAprobados());
+                System.out.println("Nº de módulos suspendidos:              "+n.getModulosSuspendidos());
+                System.out.println("Nº de módulos convalidados:             "+n.getModulosConvalidados());
+                System.out.println("------------------------------------------");
+                System.out.println("\nFecha: "+n.getFecha());
+                System.out.println("Lugar: "+n.getLugar());
             }
         }catch(EOFException e){
             System.out.println("fin del fichero");
