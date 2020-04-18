@@ -8,6 +8,7 @@ package practica7ej3;
 import java.util.Scanner;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -40,198 +42,263 @@ public class Practica7ej3 {
         System.out.println("Dime la ruta de salida");
         String salida = lector.next();
         pasarNotasTxt(entrada, salida, campos, notas);
-        try{
+        try {
             escribirObjeto(entrada, notas);
-        }
-        catch(IOException exc){
+        } catch (IOException exc) {
             System.out.println("Error al leer el archivo");
             System.out.println(exc.getMessage());
         }
-        
-        
+        //leerObjeto();
+
     }
 
     public static void pasarNotasTxt(String entrada, String salida, String[] campos, String[] notas) throws NumberFormatException {
         int i = 1;
-        try(BufferedReader lectorMejorado = new BufferedReader(new FileReader(entrada)); /*BufferedWriter escritorMejorado = new BufferedWriter(new FileWriter(salida))*/){
+        try (BufferedReader lectorMejorado = new BufferedReader(new FileReader(entrada)); /*BufferedWriter escritorMejorado = new BufferedWriter(new FileWriter(salida))*/) {
             boolean eof = false;
             String lineaLeida = lectorMejorado.readLine();
             //System.out.println(lineaLeida);
             while (lineaLeida != null) {
-                String nombreAlumno =  "";
-                boolean seguirObteniendoNombre =  true;
+                String nombreAlumno = "";
+                boolean seguirObteniendoNombre = true;
                 int j = 0;
                 int contadorEspaciosNombre = 0;
-                while(seguirObteniendoNombre){
+                while (seguirObteniendoNombre) {
                     char c = lineaLeida.charAt(j);
-                    if (c!=' '){
-                        nombreAlumno+=c;
+                    if (c != ' ') {
+                        nombreAlumno += c;
                     }
-                    if (c==' '){
-                        contadorEspaciosNombre++; 
+                    if (c == ' ') {
+                        contadorEspaciosNombre++;
                     }
                     j++;
-                    if( contadorEspaciosNombre==3){
+                    if (contadorEspaciosNombre == 3) {
                         seguirObteniendoNombre = false;
                     }
                 }
-                BufferedWriter escritorMejorado = new BufferedWriter(new FileWriter(salida+nombreAlumno+".txt"));
-                escritorMejorado.append("\n---------------------------------------------\n" +
-                        "Boletín de notas CIFP FBMOLL\n" +
-                        "---------------------------------------------\n");
-                
+                BufferedWriter escritorMejorado = new BufferedWriter(new FileWriter(salida + nombreAlumno + ".txt"));
+                escritorMejorado.append("\n---------------------------------------------\n"
+                        + "Boletín de notas CIFP FBMOLL\n"
+                        + "---------------------------------------------\n");
+
                 escritorMejorado.append(campos[0]);
                 //System.out.println("");
-                boolean seguirImprimiendo =  true;
+                boolean seguirImprimiendo = true;
                 int n = 0;
                 int contadorEspacios = 0;
-                while(seguirImprimiendo){
+                while (seguirImprimiendo) {
                     char c = lineaLeida.charAt(n);
-                    if (c==' '){
-                        contadorEspacios++; 
+                    if (c == ' ') {
+                        contadorEspacios++;
                     }
                     escritorMejorado.append(c);
                     n++;
-                    if(contadorEspacios==3){
+                    if (contadorEspacios == 3) {
                         seguirImprimiendo = false;
                     }
                 }
-                escritorMejorado.append("\n------------------------------   -------\n"+campos[1]+"                            "+campos[2]+"\n------------------------------   -------\n");
-                
+                escritorMejorado.append("\n------------------------------   -------\n" + campos[1] + "                            " + campos[2] + "\n------------------------------   -------\n");
+
                 int modulosAprobados = 0;
                 int modulosSuspendidos = 0;
                 int modulosConvalidados = 0;
                 int contadorEspaciosNota = 0;
                 int posicionNota = 3;
                 int y = 0;
-                
-                for(int q = 0; q<notas.length; q++){
+
+                for (int q = 0; q < notas.length; q++) {
                     escritorMejorado.append(notas[q]);
                     boolean seguirBuscandoNota = true;
-                    
-                    while(seguirBuscandoNota){
+
+                    while (seguirBuscandoNota) {
                         char c = lineaLeida.charAt(y);
-                        if(contadorEspaciosNota==posicionNota){
+                        if (contadorEspaciosNota == posicionNota) {
                             seguirBuscandoNota = false;
                             posicionNota++;
-                            if(Character.isDigit(c)){
+                            if (Character.isDigit(c)) {
                                 escritorMejorado.append(c);
-                                int s = y+1;
+                                int s = y + 1;
                                 char caracterSiguiente = lineaLeida.charAt(s);
-                                escritorMejorado.append(caracterSiguiente+"\n");
-                                
-                                if(Character.isDigit(caracterSiguiente)){
+                                escritorMejorado.append(caracterSiguiente + "\n");
+
+                                if (Character.isDigit(caracterSiguiente)) {
                                     String numeroCompleto = new StringBuilder().append(c).append(caracterSiguiente).toString();
                                     //String numeroFinal = c+""+caracterSiguiente;
                                     int numeroFinalint = Integer.parseInt(numeroCompleto);
                                     //escritorMejorado.append(numeroFinal);
 
-                                    if(numeroFinalint>=5){
+                                    if (numeroFinalint >= 5) {
                                         modulosAprobados++;
+                                    } else {
+                                        modulosSuspendidos++;
                                     }
-                                    else{
+                                } else {
+                                    int d = Character.getNumericValue(c);
+                                    if (d >= 5) {
+                                        modulosAprobados++;
+                                    } else {
                                         modulosSuspendidos++;
                                     }
                                 }
-                                else{
-                                    int d=Character.getNumericValue(c);
-                                    if(d>=5){
-                                        modulosAprobados++;
-                                    }
-                                    else{
-                                        modulosSuspendidos++;
-                                    }
-                                }
-                                
-                            }
-                            else{
+
+                            } else {
                                 escritorMejorado.append("c-5 \n");
                                 modulosConvalidados++;
                                 modulosAprobados++;
                             }
                         }
-                        if(c==' '){
-                            contadorEspaciosNota++; 
+                        if (c == ' ') {
+                            contadorEspaciosNota++;
                         }
-                        
+
                         y++;
                     }
-                    
+
                 }
-                
+
                 escritorMejorado.append("------------------------------------------\n");
-                escritorMejorado.append("Nº de módulos aprobados:                "+modulosAprobados+"\nNº de módulos suspendidos:              "+modulosSuspendidos+"\nNº de módulos convalidados:             "+modulosConvalidados+"\n");
+                escritorMejorado.append("Nº de módulos aprobados:                " + modulosAprobados + "\nNº de módulos suspendidos:              " + modulosSuspendidos + "\nNº de módulos convalidados:             " + modulosConvalidados + "\n");
                 escritorMejorado.append("------------------------------------------\n");
-                
+
                 /*Calendar c1 = Calendar.getInstance();
                 Calendar c2 = new GregorianCalendar();
                 
                 dia = Integer.toString(c.get(Calendar.DATE));
                 mes = Integer.toString(c.get(Calendar.MONTH));
                 annio = Integer.toString(c.get(Calendar.YEAR));*/
-                
                 Date objDate = new Date(); // Sistema actual La fecha y la hora se asignan a objDate
-                
+
                 //System.out.println(objDate);
                 String strDateFormat = "dd/MM/yyyy"; // El formato de fecha está especificado
                 SimpleDateFormat objSDF = new SimpleDateFormat(strDateFormat); // La cadena de formato de fecha se pasa como un argumento al objeto 
-                escritorMejorado.append("\nFecha: "+objSDF.format(objDate)+"\nLugar: Palma de Mallorca\n"); // El formato de fecha se aplica a la fecha actual
-                
+                escritorMejorado.append("\nFecha: " + objSDF.format(objDate) + "\nLugar: Palma de Mallorca\n"); // El formato de fecha se aplica a la fecha actual
+
                 escritorMejorado.close();
                 i++;
                 lineaLeida = lectorMejorado.readLine();
             }
-        }
-        catch(FileNotFoundException exc){
+        } catch (FileNotFoundException exc) {
             System.out.println("Error, el archivo de origen no existe");
-        }
-        catch(IOException exc) {
+        } catch (IOException exc) {
             System.out.println("Error al leer el archivo");
             System.out.println(exc.getMessage());
         }
     }
-    
-    public static void escribirObjeto(String entrada, String[] notas) throws IOException{
+
+    public static void escribirObjeto(String entrada, String[] notas) throws IOException {
         BufferedReader lectorMejorado = new BufferedReader(new FileReader(entrada));
         String lineaLeida = lectorMejorado.readLine();
         File f = new File("datos.obj");
-        FileOutputStream fos=new FileOutputStream(f);
-        ObjectOutputStream oos=new ObjectOutputStream(fos);
+        FileOutputStream fos = new FileOutputStream(f);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
         while (lineaLeida != null) {
             //System.out.println(lineaLeida);
-            boolean seguirImprimiendo =  true;
+            boolean seguirImprimiendo = true;
             int n = 0;
             int contadorEspacios = 0;
             String nombre = "";
-            while(seguirImprimiendo){
+            while (seguirImprimiendo) {
                 char c = lineaLeida.charAt(n);
-                if (c==' '){
-                    contadorEspacios++; 
+                if (c == ' ') {
+                    contadorEspacios++;
                 }
-                nombre+=c;
+                nombre += c;
                 n++;
-                if(contadorEspacios==3){
+                if (contadorEspacios == 3) {
                     seguirImprimiendo = false;
                 }
             }
             
+            int modulosAprobados = 0;
+            int modulosSuspendidos = 0;
+            int modulosConvalidados = 0;
             int posicionNota = 3;
+            int contadorEspaciosNota = 0;
             int y = 0;
-            
 
-            for(int q = 0; q<notas.length; q++){
-                
+            String[] arrayNotas = new String[6];
+
+            for (int q = 0; q < arrayNotas.length; q++) {
+
                 boolean seguirBuscandoNota = true;
+
+                while (seguirBuscandoNota) {
+                    char c = lineaLeida.charAt(y);
+                    if (contadorEspaciosNota == posicionNota) {
+                        seguirBuscandoNota = false;
+                        posicionNota++;
+                        if (Character.isDigit(c)) {
+                            int s = y + 1;
+                            char caracterSiguiente = lineaLeida.charAt(s);
+                            if (Character.isDigit(caracterSiguiente)) {
+                                String numeroCompleto = new StringBuilder().append(c).append(caracterSiguiente).toString();
+                                arrayNotas[q]=numeroCompleto;
+                                int numeroCompletoint = Integer.parseInt(numeroCompleto);
+                                modulosAprobados++;
+                            } else {
+                                arrayNotas[q]=String.valueOf(c);
+                                if(c>=5){
+                                    modulosAprobados++;
+                                }
+                                else{
+                                    modulosSuspendidos++;
+                                }
+                            }
+
+                        } else {
+                            arrayNotas[q]="c-5";
+                            modulosConvalidados++;
+                            modulosAprobados++;
+                        }
+                    }
+                    if (c == ' ') {
+                        contadorEspaciosNota++;
+                    }
+
+                    y++;
+                }
+                
 
             }
             
-            oos.writeObject(new Notas(nombre,10,10,10,10,10,10,"feccha","lugar"));
+            Date objDate = new Date(); // Sistema actual La fecha y la hora se asignan a objDate
+
+            //System.out.println(objDate);
+            String strDateFormat = "dd/MM/yyyy"; // El formato de fecha está especificado
+            SimpleDateFormat objSDF = new SimpleDateFormat(strDateFormat); // La cadena de formato de fecha se pasa como un argumento al objeto 
+            //escritorMejorado.append("\nFecha: " + objSDF.format(objDate) + "\nLugar: Palma de Mallorca\n"); // El formato de fecha se aplica a la fecha actual
             
+            
+            /*for (int q = 0; q < arrayNotas.length; q++) {
+                System.out.println(arrayNotas[q]);
+            }*/
+            //System.out.println(arrayNotas);
+
+            oos.writeObject(new Notas(nombre, arrayNotas,modulosAprobados,modulosSuspendidos,modulosConvalidados, objSDF.format(objDate), "Palma de mallorca"));
+
             lineaLeida = lectorMejorado.readLine();
+
         }
         lectorMejorado.close();
-        oos.close();        
+        oos.close();
+
     }
-    
-    
+
+    public static void leerObjeto() throws ClassNotFoundException, IOException{
+        ObjectInputStream ois=null;
+        try{
+            File f=new File("datos.obj");
+            FileInputStream fis = new FileInputStream(f);
+            ois=new ObjectInputStream(fis);
+            while(true){
+                Notas n
+            }
+        }catch(EOFException e){
+            System.out.println("fin del fichero");
+        }finally{
+            ois.close();
+        }
+    }
 }
+
+
