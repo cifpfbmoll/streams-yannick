@@ -18,6 +18,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -41,27 +43,87 @@ public class Practica7ej3 {
         String entrada = lector.next();
         System.out.println("Dime la ruta de salida");
         String salida = lector.next();
-        pasarNotasTxt(entrada, salida, campos, notas);
+        try{
+            pasarNotasTxt(entrada, salida, campos, notas);
+        }
+        catch(NumberFormatException e){
+            System.out.println("La aplicación ha intentado convertir una cadena a uno de los tipos numéricos, pero la cadena no tiene el formato apropiado.");
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+        catch(ExcepcionNotaNoValida e){
+            
+        }
         try {
             escribirObjeto(entrada, notas);
-        } catch (IOException exc) {
+        } 
+        catch (IOException exc) {
             System.out.println("Error al leer el archivo");
+            exc.printStackTrace();
             System.out.println(exc.getMessage());
+        } 
+        catch (ExcepcionNotaNoValida e){
+        BufferedWriter bw = null;
+        FileWriter fw = null;    
+            try{
+                System.out.println("El alumno "+e.getMensaje());
+                
+                Date objDate = new Date(); // Sistema actual La fecha y la hora se asignan a objDate
+                String strDateFormat = "dd/MM/yyyy"; // El formato de fecha está especificado
+                SimpleDateFormat objSDF = new SimpleDateFormat(strDateFormat); // La cadena de formato de fecha se pasa como un argumento al objeto 
+                String strHoraFormat = "HH:mm:ss";
+                SimpleDateFormat objHora = new SimpleDateFormat(strHoraFormat);
+                
+                StringWriter errors = new StringWriter();
+                e.printStackTrace(new PrintWriter(errors));
+                String excepcionGenerada = errors.toString();
+                
+                String data = "----\nFecha: "+objSDF.format(objDate)+" Hora: "+objHora.format(objDate)+"\nEl alumno "+e.getMensaje()+"\n"+excepcionGenerada+"----\n";
+                File file = new File("log.txt");
+                // Si el archivo no existe, se crea!
+                if (!file.exists()) {
+                    file.createNewFile();
+                }
+                // flag true, indica adjuntar información al archivo.
+                fw = new FileWriter(file.getAbsoluteFile(), true);
+                bw = new BufferedWriter(fw);
+                bw.write(data);
+                System.out.println("información agregada al log de errores");
+            }
+            catch(IOException exc){
+                System.out.println("Error al leer el archivo");
+                System.out.println(exc.getMessage());
+            }
+            
+            finally {
+                try {
+                    //Cierra instancias de FileWriter y BufferedWriter
+                    if (bw != null)
+                    bw.close();
+                    if (fw != null)
+                    fw.close();
+                } 
+                catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
         try{
             leerObjeto(notas);
         }catch(ClassNotFoundException e){
-            
+            System.out.println("La clase en la cual se esta intentando pasar la informacion no existe");
+            e.printStackTrace();
+            System.out.println(e.getMessage());
         }catch(IOException e){
-            
+            System.out.println("Error al leer el archivo");
+            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
-        //leerObjeto();
-
     }
 
-    public static void pasarNotasTxt(String entrada, String salida, String[] campos, String[] notas) throws NumberFormatException {
+    public static void pasarNotasTxt(String entrada, String salida, String[] campos, String[] notas) throws NumberFormatException, ExcepcionNotaNoValida {
         int i = 1;
-        try (BufferedReader lectorMejorado = new BufferedReader(new FileReader(entrada)); /*BufferedWriter escritorMejorado = new BufferedWriter(new FileWriter(salida))*/) {
+        try (BufferedReader lectorMejorado = new BufferedReader(new FileReader(entrada));) {
             boolean eof = false;
             String lineaLeida = lectorMejorado.readLine();
             //System.out.println(lineaLeida);
@@ -119,6 +181,9 @@ public class Practica7ej3 {
 
                     while (seguirBuscandoNota) {
                         char c = lineaLeida.charAt(y);
+                        if(c=='-'){
+                            throw new ExcepcionNotaNoValida(nombreAlumno);
+                        }
                         if (contadorEspaciosNota == posicionNota) {
                             seguirBuscandoNota = false;
                             posicionNota++;
@@ -130,9 +195,7 @@ public class Practica7ej3 {
 
                                 if (Character.isDigit(caracterSiguiente)) {
                                     String numeroCompleto = new StringBuilder().append(c).append(caracterSiguiente).toString();
-                                    //String numeroFinal = c+""+caracterSiguiente;
                                     int numeroFinalint = Integer.parseInt(numeroCompleto);
-                                    //escritorMejorado.append(numeroFinal);
 
                                     if (numeroFinalint >= 5) {
                                         modulosAprobados++;
@@ -144,7 +207,13 @@ public class Practica7ej3 {
                                     if (d >= 5) {
                                         modulosAprobados++;
                                     } else {
-                                        modulosSuspendidos++;
+                                        if(d==0){
+                                            throw new ExcepcionNotaNoValida(nombreAlumno);
+                                        }
+                                        else{
+                                            modulosSuspendidos++;
+                                        }
+                                        
                                     }
                                 }
 
@@ -192,7 +261,7 @@ public class Practica7ej3 {
         }
     }
 
-    public static void escribirObjeto(String entrada, String[] notas) throws IOException {
+    public static void escribirObjeto(String entrada, String[] notas) throws IOException, ExcepcionNotaNoValida {
         BufferedReader lectorMejorado = new BufferedReader(new FileReader(entrada));
         String lineaLeida = lectorMejorado.readLine();
         File f = new File("datos.obj");
@@ -231,6 +300,9 @@ public class Practica7ej3 {
 
                 while (seguirBuscandoNota) {
                     char c = lineaLeida.charAt(y);
+                    if(c=='-'){
+                        throw new ExcepcionNotaNoValida(nombre);
+                    }
                     if (contadorEspaciosNota == posicionNota) {
                         seguirBuscandoNota = false;
                         posicionNota++;
@@ -244,14 +316,21 @@ public class Practica7ej3 {
                                 modulosAprobados++;
                             } else {
                                 arrayNotas[q]=String.valueOf(c);
-                                if(c>=5){
+                                int d = Character.getNumericValue(c);
+                                if(d>=5){
                                     modulosAprobados++;
                                 }
                                 else{
-                                    modulosSuspendidos++;
+                                    if(d<=0){
+                                        modulosSuspendidos++;
+                                        throw new ExcepcionNotaNoValida(nombre);
+                                    }
+                                    else{
+                                        modulosSuspendidos++;
+                                    }                                   
                                 }
                             }
-
+                           
                         } else {
                             arrayNotas[q]="c-5";
                             modulosConvalidados++;
@@ -264,31 +343,17 @@ public class Practica7ej3 {
 
                     y++;
                 }
-                
-
             }
             
             Date objDate = new Date(); // Sistema actual La fecha y la hora se asignan a objDate
-
-            //System.out.println(objDate);
             String strDateFormat = "dd/MM/yyyy"; // El formato de fecha está especificado
             SimpleDateFormat objSDF = new SimpleDateFormat(strDateFormat); // La cadena de formato de fecha se pasa como un argumento al objeto 
-            //escritorMejorado.append("\nFecha: " + objSDF.format(objDate) + "\nLugar: Palma de Mallorca\n"); // El formato de fecha se aplica a la fecha actual
-            
-            
-            /*for (int q = 0; q < arrayNotas.length; q++) {
-                System.out.println(arrayNotas[q]);
-            }*/
-            //System.out.println(arrayNotas);
-
             oos.writeObject(new Notas(nombre, arrayNotas,modulosAprobados,modulosSuspendidos,modulosConvalidados, objSDF.format(objDate), "Palma de mallorca"));
 
             lineaLeida = lectorMejorado.readLine();
-
         }
         lectorMejorado.close();
         oos.close();
-
     }
 
     public static void leerObjeto(String[] notas) throws ClassNotFoundException, IOException{
